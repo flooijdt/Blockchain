@@ -31,9 +31,9 @@ class Blockchain:
     def proof_of_work(self, previous_proof):
         new_proof = 1
         check_proof = False
-        while not check_proof:
+        while check_proof is False:
             hash_operation = hashlib.sha256(
-                str(previous_proof**2 - new_proof**2).encode()
+                str(new_proof ** 2 - previous_proof ** 2).encode()
             ).hexdigest()
             # Here the only prerequisite for the operation between prev and new hashes is that the operation cannot be simetrical (X operation Y == Y operation X)
             if hash_operation[:4] == "0000":
@@ -56,7 +56,7 @@ class Blockchain:
             previous_proof = previous_block["proof"]
             proof = block["proof"]
             hash_operation = hashlib.sha256(
-                str(proof**2 - previous_proof**2).encode()
+                str(proof ** 2 - previous_proof ** 2).encode()
             ).hexdigest()
             if hash_operation[:4] != "0000":
                 return False
@@ -98,6 +98,11 @@ def get_chain():
 
 
 # check if blockchain is working fine.
+@app.route("/is_chain_valid/", methods=["GET"])
+def is_chain_valid():
+    response = {"Is chain valid?": str(blockchain.is_chain_valid(blockchain.chain))}
+    return jsonify(response), 200
+
 
 # run the app
 app.run(host="0.0.0.0", port=5000)
